@@ -14,3 +14,6 @@ To keep the scraper simple it will make a request to the API for the top 100 nam
 
 ## MISC Notes
 - In order to be a _good_ API user a rate limit has been used on the API function to ensure that we don't exceed the 25 requests a minute.
+- If you want to replicate or use this scraper you will need to register for your own API key with the Vic Gov Data website: https://www.developer.vic.gov.au/
+  - I am pulling my API key locally from a different module `mysecrets.py` under the variable name `API_KEY`
+  - You may recreate this locally yourself or simply overwrite `mysecrets.API_KEY` in the request header with your API Key.
