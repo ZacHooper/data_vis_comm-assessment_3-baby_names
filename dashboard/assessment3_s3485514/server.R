@@ -1,21 +1,13 @@
-#
-# This is the server logic of a Shiny web application. You can run the
-# application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(plotly)
 library(readr)
 library(ggplot2)
 library(lubridate)
 library(scales)
+library(dplyr)
 
 # Load data
-clean_data <- read_csv("data/clean_data.csv")
+clean_data <- read.csv("data/clean_data.csv")
 clean_data$year <- as.Date(parse_date_time(clean_data$year, orders = "%Y"))
 # Misc Name Lists
 
@@ -98,6 +90,10 @@ shinyServer(function(input, output, session) {
         return (return_names)
     }
     
+    output$inlineReference <- renderText({
+        "(Births, Deaths and Marriages Victoria 2021)"
+    })
+    
     # Sidebar Text
     output$text_boy_girl_header <- renderText({
         "Are you having a boy or a girl?"
@@ -137,9 +133,7 @@ shinyServer(function(input, output, session) {
     
     # Main Plot
     output$rankByYear <- renderPlotly({
-        print(global_state$names)
         data <- filterDataForPlot(clean_data, input$gender, global_state$names$name)
-        print(data)
 
         # Set the variable to group the highlights on and initialise highlighting
         d <- highlight_key(data, ~name)
@@ -171,7 +165,7 @@ shinyServer(function(input, output, session) {
         
         # Add highlight logic to plot
         highlight(gg, on = "plotly_click", off = "plotly_doubleclick", selected = s, color = "red",
-                  opacityDim = 0.8)
+                  opacityDim = 0.5)
         
     })
     
@@ -256,6 +250,11 @@ shinyServer(function(input, output, session) {
         if (!is.element(global_state$selected_name[1], global_state$my_baby_names)) {
             global_state$my_baby_names <- append(global_state$my_baby_names, global_state$selected_name[1])
         }
+    })
+    
+    # References
+    output$references <- renderText({
+        "Births, Deaths and Marriages Victoria 2021, Popular Baby Names Victoria API, API, State Government of Victoria, Births, Deaths and Marriages Victoria, viewed 5 August 2021, https://www.developer.vic.gov.au/index.php?option=com_apiportal&view=apitester&usage=api&tab=tests&apiName=Popular+Baby+Names+Victoria+API&apiId=1c3356c4-9e9e-4aeb-b766-4f8480d486c1&managerId=1&type=rest&apiVersion=1.0.0&menuId=153&renderTool=1"
     })
 
 })

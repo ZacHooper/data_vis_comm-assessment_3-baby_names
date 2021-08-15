@@ -9,10 +9,13 @@
 
 library(shiny)
 library(shinydashboard)
+library(dplyr)
+library(plotly)
 
-clean_data <- read_csv("data/clean_data.csv")
+clean_data <- read.csv("data/clean_data.csv")
 male_names <- clean_data %>% filter(sex == "MALE") %>% distinct(name) %>% arrange(name)
 female_names <- clean_data %>% filter(sex == "FEMALE") %>% distinct(name) %>% arrange(name)
+
 
 # Define UI for application that draws a histogram
 shinyUI(dashboardPage(
@@ -36,21 +39,33 @@ shinyUI(dashboardPage(
                         list("My Baby Names" = "myBabyNames",
                              "Top 10 Boys Names in 2008" = "top10Boy", 
                              "Top 10 Girls Names in 2008" = "top10Girl", 
-                             "All Names" = "allNames"), selected = "top10Boy"),
+                             "All Names" = "allNames"), selected = "allNames"),
             h3(textOutput("babyNamesHeader", inline = TRUE)),
             textOutput("babyNames"),
             textOutput("selection")
         )
     ),
     dashboardBody(
-        fluidRow(box(plotlyOutput("rankByYear"), width = 12)),
-        fluidRow(
-            box(plotlyOutput("barplot"), width = 9),
-            box(textOutput("trending"),
-                br(""),
-                actionButton("addToMyNames", "Add to My Names"), 
-                br(""),
-                width = 3),
+        fluidPage(
+            tabsetPanel(
+                tabPanel("Baby Names", 
+                    fluidRow(box(plotlyOutput("rankByYear"),
+                                 textOutput("inlineReference"),
+                                 width = 12)),
+                    fluidRow(
+                        box(plotlyOutput("barplot"), width = 9),
+                        box(textOutput("trending"),
+                            br(""),
+                            actionButton("addToMyNames", "Add to My Names"), 
+                            br(""),
+                            width = 3),
+                    )
+                ),
+                tabPanel("References",
+                         fluidRow(
+                             box(textOutput("references"))
+                         ))
+            )   
         )
     )
 ))
